@@ -22,7 +22,11 @@ $ terraform apply
 apply後に出力された `eksctl` コマンドを入力
 
 ```
-$ eksctl create cluster --name ${var.name} --vpc-public-subnets ${join(",", module.vpc.public_subnets)} --vpc-private-subnets ${join(",", module.vpc.private_subnets)} -f config.yaml
+$ eksctl create cluster \
+    --name <YOUR CLUSTER NAME. e.g. "search"> \
+    --vpc-public-subnets <PUBLIC SUBNET IDS> \
+    --vpc-private-subnets <PRIVATE SUBNET IDS> \
+    -f config.yaml
 ```
 
 ## [WIP] Deploymentの作成
