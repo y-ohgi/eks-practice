@@ -87,3 +87,15 @@ $ eksctl delete nodegroup search-private-blue --cluster search
 ## [WIP] CronJob
 
 ## [WIP] ServiceMesh
+
+# 雑記
+## 環境構築
+VPC/RDS/ElastiCacheみたいなAWSリソースはTerraform、EKSはcksctlを使うことにした。  
+
+理由としてはeksctlを使用したいこと。  
+クラスタ/NodeGroupのバージョンアップを行う必要があり、その追従を行うのにeksctlが楽なため。  
+逆にTerraformだとドレイニングを行ったりグレイスフルなアップデートが困難かつ複雑なHCLを書く必要が出てくる。
+
+また、AWSリソースを管理したいモチベーションがあり、例えばRDSやElastiCacheなど、それらを管理するのにTerraformを使用する。  
+
+CloudFormation出ない理由はHelmの管理をTerraformで行いたいことが理由
