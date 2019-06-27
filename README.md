@@ -19,7 +19,9 @@ $ terraform init
 $ terraform apply
 ```
 
-apply後に出力された `eksctl` コマンドを入力
+apply後に出力された `eksctl` コマンドを入力。  
+`--vpc-public-subnets` `--vpc-private-subnets` にTerraformで作成したSubnetのIDを入力する。  
+`config.yaml` は起動するnodegroup(Workerノード)の設定。今回WorkerノードはPrivateSubnetへ登録し、オートスケールさせるようにする。
 
 ```
 $ eksctl create cluster \
@@ -30,13 +32,16 @@ $ eksctl create cluster \
 ```
 
 ## [WIP] Deploymentの作成
-nginx
+- nginxの起動
+- ECRからpull
 
 ## [WIP] Serviceの作成
-cluster ip
+- cluster ip
+- わり楽そう
 
 ## [WIP] Ingressの作成
-ALB ingress
+- ALB ingress
+- ACM
 
 ## [WIP] 監視
 ### Container Insights
@@ -82,11 +87,13 @@ $ eksctl delete nodegroup search-private-blue --cluster search
 
 ## [WIP] CA
 
-## [WIP] CD
-
 ## [WIP] CronJob
 
 ## [WIP] ServiceMesh
+- Istio
+- AppMesh
+
+## [WIP] CD Tool
 
 # 雑記
 ## 環境構築
@@ -99,3 +106,9 @@ VPC/RDS/ElastiCacheみたいなAWSリソースはTerraform、EKSはcksctlを使�
 また、AWSリソースを管理したいモチベーションがあり、例えばRDSやElastiCacheなど、それらを管理するのにTerraformを使用する。  
 
 CloudFormation出ない理由はHelmの管理をTerraformで行いたいことが理由
+
+## リポジトリ構成
+リポジトリをインフラとアプリで分けるのか、AWSリソースとK8sも分割するのかが見えてない。  
+
+ざっくり、アプリケーションはマイクロサービスのサービス単位で、k8sのmanifestもそのリポジトリの中に含める、でいのかなと。  
+で、K8sクラスタとVPCは1つのリポジトリ、インフラ用リポジトリ、として扱うといいのかなと。
