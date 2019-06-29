@@ -1,0 +1,62 @@
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: solr-headless
+  labels:
+    app: solr
+
+spec:
+  clusterIP: None
+  selector:
+    app: solr
+  ports:
+  - port: 8983
+    name: server
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+
+metadata:
+  name: solr
+
+spec:
+  selector:
+    matchLabels:
+      app: solr
+  serviceName: solr-headless
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: solr
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+      - name: solr
+        image: solr:8.1.1
+
+        ports:
+        - containerPort: 8983
+          name: web
+
+        env:
+        # - name: "SOLR_HOME"
+        #   value: "/opt/solr/server/home"
+        - name: "ZK_HOST"
+          value: "zookeeper-0.zookeeper-headless:2181,zookeeper-1.zookeeper-headless:2181,zookeeper-2.zookeeper-headless:2181"
+
+        # volumeMounts:
+        # - name: data
+        #   mountPath: /optt/solr/server/home
+
+  # volumeClaimTemplates:
+  # - metadata:
+  #     name: data
+  #   spec:
+  #     accessModes: [ "ReadWriteOnce" ]
+  #     storageClassName: "gp2"
+  #     resources:
+  #       requests:
+  #         storage: 1Gi
