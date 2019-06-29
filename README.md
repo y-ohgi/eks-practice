@@ -17,6 +17,7 @@ EKSの学習用リポジトリ
 terraformでVPCの構築
 
 ```
+$ cd /path/to/eks-practice/aws
 $ terraform init
 $ terraform apply
 ```
@@ -26,6 +27,7 @@ apply後に出力された `eksctl` コマンドを入力。
 `config.yaml` は起動するnodegroup(Workerノード)の設定。今回WorkerノードはPrivateSubnetへ登録し、オートスケールさせるようにする。
 
 ```
+$ cd /path/to/eks-practice/eks
 $ eksctl create cluster \
     --name <YOUR CLUSTER NAME. e.g. "search"> \
     --vpc-public-subnets <PUBLIC SUBNET IDS> \
@@ -110,10 +112,24 @@ deployment.extensions "nginx" deleted
 - ALB ingress
 - ACM
 
+```console
+$ helm repo add incubator http://storage.googleapis.com/kubernetes-charts-incubator
+"incubator" has been added to your repositories
+$ helm install incubator/aws-alb-ingress-controller \
+    --set clusterName=test \
+    --set autoDiscoverAwsRegion=true \
+    --set autoDiscoverAwsVpcID=true \
+    --name alb-ingress \
+    --namespace kube-system
+```
+
 ## [WIP] 監視
 ### Container Insights
 
+
+
 ### Datadog
+
 
 ## [WIP] クラスタのバージョンアップ
 
@@ -150,11 +166,50 @@ $ eksctl delete nodegroup search-private-blue --cluster search
 - S3を使えたりしないか
 - nodegroupの更新時にどのような挙動をするか
 
+```yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: web
+spec:
+  selector:
+    matchLabels:
+      app: nginx # has to match .spec.template.metadata.labels
+  serviceName: "nginx"
+  replicas: 3 # by default is 1
+  template:
+    metadata:
+      labels:
+        app: nginx # has to match .spec.selector.matchLabels
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+      - name: nginx
+        image: k8s.gcr.io/nginx-slim:0.8
+        ports:
+        - containerPort: 80
+          name: web
+        volumeMounts:
+        - name: www
+          mountPath: /usr/share/nginx/html
+  volumeClaimTemplates:
+  - metadata:
+      name: www
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: "my-storage-class"
+      resources:
+        requests:
+          storage: 1Gi
+
+```
+
+
 ## [WIP] HPA
 
-## [WIP] CA
 
 ## [WIP] CronJob
+
 
 ## [WIP] ServiceMesh
 - Istio
@@ -186,7 +241,7 @@ $ helm init --service-account tiller
 Happy Helming!
 ```
 
-[Helm](https://helm.sh/docs/install/)
+> [Helm](https://helm.sh/docs/install/)
 
 ## クラスタ内に一時的なコンテナの作成
 ```console

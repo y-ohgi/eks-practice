@@ -13,6 +13,9 @@ nodeGroups:
     desiredCapacity: 3
     minSize: 3
     maxSize: 8
+    iam:
+      withAddonPolicies:
+        albIngress: true
 
   # $ eksctl drain nodegroup search-private-blue --cluster search
   # $ eksctl delete nodegroup search-private-blue --cluster search
@@ -22,5 +25,8 @@ nodeGroups:
   #   desiredCapacity: 3
   #   minSize: 3
   #   maxSize: 8
+  #   iam:
+  #     withAddonPolicies:
+  #       albIngress: true
 
 availabilityZones: ["ap-northeast-1a", "ap-northeast-1c", "ap-northeast-1d"]
