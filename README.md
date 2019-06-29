@@ -31,9 +31,52 @@ $ eksctl create cluster \
     -f config.yaml
 ```
 
-## [WIP] Deploymentの作成
-- nginxの起動
-- ECRからpull
+## Deploymentの作成
+### コマンド
+```console
+$ kubectl create deployment nginx --image nginx
+```
+
+```console
+$ kubectl get all
+NAME                        READY   STATUS    RESTARTS   AGE
+pod/nginx-55bd7c9fd-7gcmt   1/1     Running   0          31s
+
+NAME                 TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
+service/kubernetes   ClusterIP   10.100.0.1   <none>        443/TCP   23h
+
+NAME                    DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/nginx   1         1         1            1           32s
+
+NAME                              DESIRED   CURRENT   READY   AGE
+replicaset.apps/nginx-55bd7c9fd   1         1         1       32s
+```
+
+### Manifest
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  labels:
+    run: nginx
+  name: nginx
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run: nginx
+  template:
+    metadata:
+      labels:
+        run: nginx
+    spec:
+      containers:
+      - image: nginx
+        name: nginx
+```
+
 
 ## [WIP] Serviceの作成
 - cluster ip
