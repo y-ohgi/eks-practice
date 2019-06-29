@@ -9,6 +9,8 @@ EKSの学習用リポジトリ
     - 1.12
 - Terraform
     - 0.12.0
+- Helm
+    - 2.12.0
 
 # How To Use
 ## クラスタの構築
@@ -161,6 +163,31 @@ $ eksctl delete nodegroup search-private-blue --cluster search
 ## [WIP] CD Tool
 
 # Tips
+## Helmのインストール
+
+helmのインストール
+```console
+$ brew install kubernetes-helm
+$ helm repo update
+Hang tight while we grab the latest from your chart repositories...
+...Skip local chart repository
+...Successfully got an update from the "stable" chart repository
+Update Complete. ⎈ Happy Helming!⎈
+```
+
+tillerのインストール
+```console
+$ kubectl create serviceaccount --namespace kube-system tiller
+serviceaccount/tiller created
+$ kubectl create clusterrolebinding tiller-cluster-rule --clusterrole=cluster-admin --serviceaccount=kube-system:tiller
+clusterrolebinding.rbac.authorization.k8s.io/tiller-cluster-rule created
+$ helm init --service-account tiller
+  :
+Happy Helming!
+```
+
+[Helm](https://helm.sh/docs/install/)
+
 ## クラスタ内に一時的なコンテナの作成
 ```console
 $ kubectl run test -it --restart=Never --image=amazonlinux:2 bash
