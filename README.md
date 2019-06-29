@@ -95,6 +95,29 @@ $ eksctl delete nodegroup search-private-blue --cluster search
 
 ## [WIP] CD Tool
 
+# Tips
+## クラスタ内に一時的なコンテナの作成
+```console
+$ kubectl run test -it --restart=Never --image=amazonlinux:2 bash
+bash-4.2#
+```
+
+削除
+```console
+$ kubectl get all
+NAME       READY   STATUS      RESTARTS   AGE
+pod/test   0/1     Completed   0          116s
+
+NAME                 TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
+service/kubernetes   ClusterIP   10.100.0.1   <none>        443/TCP   23h
+$ kubectl delete pod/test
+pod "test" deleted
+$ kubectl get all
+NAME                 TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
+service/kubernetes   ClusterIP   10.100.0.1   <none>        443/TCP   23h
+```
+
+
 # 雑記
 ## 環境構築
 VPC/RDS/ElastiCacheみたいなAWSリソースはTerraform、EKSはcksctlを使うことにした。  
