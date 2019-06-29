@@ -32,7 +32,6 @@ $ eksctl create cluster \
 ```
 
 ## Deploymentの作成
-### コマンド
 ```console
 $ kubectl create deployment nginx --image nginx
 ```
@@ -52,35 +51,58 @@ NAME                              DESIRED   CURRENT   READY   AGE
 replicaset.apps/nginx-55bd7c9fd   1         1         1       32s
 ```
 
-### Manifest
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-
-metadata:
-  labels:
-    run: nginx
-  name: nginx
-
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      run: nginx
-  template:
-    metadata:
-      labels:
-        run: nginx
-    spec:
-      containers:
-      - image: nginx
-        name: nginx
+```console
+$ kubectl delete deploy/nginx
 ```
 
+## Serviceの作成
+Deploymentの作成後、そのDeploymentを用いたServiceを作成
+```console
+$ kubectl create deployment nginx --image nginx
+deployment.apps/nginx created
+$ kubectl expose deploy nginx --port=80 --target-port=80
+service/nginx exposed
+```
 
-## [WIP] Serviceの作成
-- cluster ip
-- わり楽そう
+動作確認
+```console
+$ kubectl get all
+NAME                        READY   STATUS    RESTARTS   AGE
+pod/nginx-55bd7c9fd-v7x2c   1/1     Running   0          49s
+
+NAME                 TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)   AGE
+service/kubernetes   ClusterIP   10.100.0.1       <none>        443/TCP   23h
+service/nginx        ClusterIP   10.100.160.225   <none>        80/TCP    12s
+
+NAME                    DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/nginx   1         1         1            1           49s
+
+NAME                              DESIRED   CURRENT   READY   AGE
+replicaset.apps/nginx-55bd7c9fd   1         1         1       49s
+```
+
+```console
+$ kubectl run test -it --restart=Never --rm --image=amazonlinux:2 -- curl -I http://nginx:80
+HTTP/1.1 200 OK
+Server: nginx/1.17.0
+Date: Sat, 29 Jun 2019 04:01:56 GMT
+Content-Type: text/html
+Content-Length: 612
+Last-Modified: Tue, 21 May 2019 14:23:57 GMT
+Connection: keep-alive
+ETag: "5ce409fd-264"
+Accept-Ranges: bytes
+
+pod "test" deleted
+```
+
+削除
+```console
+$ kubectl delete svc/nginx
+service "nginx" deleted
+$ kubectl delete deploy/nginx
+deployment.extensions "nginx" deleted
+```
 
 ## [WIP] Ingressの作成
 - ALB ingress
